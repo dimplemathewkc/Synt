@@ -1,19 +1,17 @@
-import redis
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from app.integration.rabbitmq import publish_message
 from app.core.config import settings
-from app.integration.redis import cache
+
 
 from app.integration.api_helper import make_request
-from pydantic import BaseModel
+
+from app.integration.redis import RedisClient
 
 router = APIRouter()
 
 
-@router.get("/crypto/sign", status_code=202)
-async def sign_message(
-    message: str, webhook: str, redis_client: redis.Redis = Depends(cache)
-):
+@router.get("/crypto/sign")
+async def sign_message(message: str, webhook: str):
     """
     The API endpoin forwards the request to hiring api. This is encapsulated in a task
     that runs in the background. To intiate the task the message is added the queue and
@@ -25,12 +23,17 @@ async def sign_message(
     :param redis_client: dependency
     :return:
     """
-
+    redis_client = RedisClient.Instance().get_client()
     if settings.CACHE_ACTIVE:
         if redis_client.get(message) is not None:
             return redis_client.get(message)
 
     publish_message(message, webhook)
+
+    raise HTTPException(
+        status_code=202,
+        detail="Your request is being processed, once the result is ready it will be posted to the webhook",
+    )
 
 
 @router.get("/crypto/verify")
@@ -42,5 +45,6 @@ def verify_signature(message: str, signature: str):
     :return:
     """
     response = make_request("/crypto/verify", message, signature)
-
-    return {"response": response.text}
+    if response.status_code == 200:
+        return {"response": response.text}
+    raise HTTPException(status_code=response.status_code, detail=response.text)

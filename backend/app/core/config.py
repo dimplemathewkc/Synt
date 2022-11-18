@@ -2,7 +2,6 @@ from typing import List, Union
 from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 
 
-
 class Settings(BaseSettings):
     PROJECT_NAME: str
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
@@ -15,7 +14,6 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
-
     # hiring api details
     API_KEY: str
     API_SECRET: str
@@ -27,7 +25,6 @@ class Settings(BaseSettings):
     REDIS_HOST: str
     REDIS_PORT: str
     REDIS_DB: str
-
 
     class Config:
         case_sensitive = True

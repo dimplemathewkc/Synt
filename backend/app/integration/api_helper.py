@@ -7,7 +7,7 @@ from app.utils.utils import make_url
 from app.core.config import settings
 
 
-def make_request(url: str, message: str, signature: str):
+def make_request(url: str, message: str, signature: str = None):
     """
     Make a request.
     :param url: str

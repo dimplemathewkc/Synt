@@ -1,20 +1,27 @@
 import redis
-
+from app.core.config import settings
+from app.integration.singleton import Singleton
 
 redis_conf = {
-    "host": "redis",
-    "port": 6379,
-    "db": 1,
+    "host": settings.REDIS_HOST,
+    "port": settings.REDIS_PORT,
+    "db": settings.REDIS_DB,
     "charset": "utf-8",
     "decode_responses": True,
 }
 
 
-def cache():
-    conn = redis.Redis(**redis_conf)
-    try:
-        yield conn
-    except Exception as e:
-        print(e)
-    finally:
-        conn.close()
+@Singleton
+class RedisClient:
+    def __init__(self):
+        self._client = redis.Redis(**redis_conf)
+
+    def get_client(self):
+        if self.is_active():
+            return self._client
+        else:
+            self.__init__()
+            return self._client
+
+    def is_active(self):
+        return self._client.ping()

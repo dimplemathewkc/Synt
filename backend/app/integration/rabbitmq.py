@@ -1,55 +1,29 @@
 import json
-import redis
-import pika
 import requests
-from fastapi import Depends
 from app.core.config import settings
-from app.integration.redis import cache
+
+from app.integration.rabbitmq_conf import RabbitMQConnection
+
+from backend.app.integration.redis import RedisClient
 
 
 def publish_message(message, webhook):
-    url = "amqp://guest:guest@rabbitmq:5672"
-    params = pika.URLParameters(url)
-    params.socket_timeout = 5
 
-    connection = pika.BlockingConnection(params)  # Connect to CloudAMQP
-    channel = connection.channel()
-    # channel.basic_qos(prefetch_count=1)
-    channel.queue_declare(queue="fastapi_task")
+    channel = RabbitMQConnection.Instance().get_channel()
+
     channel.basic_publish(
         exchange="",
         routing_key="fastapi_task",
         body=json.dumps({"message": message, "webhook": webhook}).encode("utf-8"),
     )
 
-    connection.close()
+    RabbitMQConnection.Instance().close_connection()
     return
 
 
-def connect():
-    url = "amqp://guest:guest@rabbitmq:5672"
-    params = pika.URLParameters(url)
-    print(params)
-    params.socket_timeout = 5
-    print(pika.BlockingConnection(params))
-    connection = pika.BlockingConnection(params)
-
-    return connection
-
-
 def process_message():
-
-    redis_client = redis.Redis(host="redis", port=6379, db=1)
-
-    url = "amqp://guest:guest@rabbitmq:5672"
-    params = pika.URLParameters(url)
-    params.socket_timeout = 5
-
-    connection = pika.BlockingConnection(params)  # Connect to CloudAMQP
-
-    channel = connection.channel()
-    # channel.basic_qos(prefetch_count=1)
-    channel.queue_declare(queue="fastapi_task")
+    redis_client = RedisClient.Instance().get_client()
+    channel = RabbitMQConnection.Instance().get_channel()
     # try:
     method_frame, header_frame, body = channel.basic_get(queue="fastapi_task")
 
@@ -68,4 +42,4 @@ def process_message():
                 requests.post(webhook, json={"message": response.text})
             channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
-    connection.close()
+    RabbitMQConnection.Instance().close_connection()

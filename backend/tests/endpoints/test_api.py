@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 
 from backend.app.main import app
@@ -35,16 +34,5 @@ def test_verify_signature():
     """
     Test verify signature.
     """
-    response = client.get("/crypto/verify?message=hello&signature=hello")
-    assert response.status_code == 200
-
-
-def test_verify_signature_with_cache():
-    """
-    Test verify signature with cache.
-    """
-    response = client.get("/crypto/verify?message=hello&signature=hello")
-    assert response.status_code == 200
-
     response = client.get("/crypto/verify?message=hello&signature=hello")
     assert response.status_code == 200
