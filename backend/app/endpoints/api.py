@@ -1,32 +1,46 @@
-from fastapi import APIRouter
-from app.integration.rabbitmq import send_message
-from app.core.config import settings
 import redis
+from fastapi import APIRouter, Depends
+from app.integration.rabbitmq import publish_message
+from app.core.config import settings
+from app.integration.redis import cache
 
-from app.integration.api import make_request
+from app.integration.api_helper import make_request
+from pydantic import BaseModel
 
 router = APIRouter()
 
 
 @router.get("/crypto/sign", status_code=202)
-async def sign_message(message: str, webhook: str):
-    """Sign the message."""
+async def sign_message(
+    message: str, webhook: str, redis_client: redis.Redis = Depends(cache)
+):
+    """
+    The API endpoin forwards the request to hiring api. This is encapsulated in a task
+    that runs in the background. To intiate the task the message is added the queue and
+    the last keeps listening to the queue and makes request to the external api and once the result is retrieved the
+    response is posted back to the webhook.
+
+    :param message: client message
+    :param webhook: callqack url
+    :param redis_client: dependency
+    :return:
+    """
 
     if settings.CACHE_ACTIVE:
-        r2 = redis.Redis(host="redis", port=6379, db=1)
+        if redis_client.get(message) is not None:
+            return redis_client.get(message)
 
-        if r2.get(message) is not None:
-            return r2.get(message)
-
-    send_message(message, webhook)
+    publish_message(message, webhook)
 
 
 @router.get("/crypto/verify")
-async def verify_signature(message: str, signature: str):
+def verify_signature(message: str, signature: str):
     """
     Verify a message signature.
     :param message:
     :param signature:
     :return:
     """
-    return make_request("/crypto/verify", message, signature)
+    response = make_request("/crypto/verify", message, signature)
+
+    return {"response": response.text}

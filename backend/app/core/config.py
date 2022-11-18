@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional, Union
-
 from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
+import os
 
 
 class Settings(BaseSettings):
@@ -26,13 +26,12 @@ class Settings(BaseSettings):
     API_SECRET: str
     API_URL: str
 
+    CACHE_ACTIVE: bool = True
+
     # redis details
     # REDIS_HOST: str
     # REDIS_PORT: str
     # REDIS_DB: str
-
-    def get_redis_url(self):
-        return f'redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}'
 
     @validator("DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:

@@ -1,14 +1,17 @@
 version: "3.8"
 
 services:
-  app:
+  backend:
     build: .
     env_file:
       - .env
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app
+      - .:/backend
+    depends_on:
+      - rabbitmq
+      - redis
     command: /start-reload.sh
 
   redis:
@@ -25,3 +28,13 @@ services:
       - "15672:15672"
     volumes:
       - ./rabbitmq:/var/lib/rabbitmq
+
+
+
+#  celery:
+#    build: .
+#    env_file:
+#      - .env
+#    command: celery -A app worker -l info
+#    volumes:
+#      - ./app:/app

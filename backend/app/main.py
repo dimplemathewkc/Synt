@@ -1,17 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import requests
-import redis
 from fastapi_utils.tasks import repeat_every
 
-from core.config import settings
+from app.integration.rabbitmq import process_message
+from app.core.config import settings
 
-from endpoints import crypto
+from app.endpoints import api
 
 
 def get_application():
     _app = FastAPI(title=settings.PROJECT_NAME)
-    _app.include_router(crypto.router)
+    _app.include_router(api.router)
     _app.add_middleware(
         CORSMiddleware,
         allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
@@ -25,18 +24,12 @@ def get_application():
 
 app = get_application()
 
+
 @app.on_event("startup")
-@repeat_every(seconds=1, wait_first=False, raise_exceptions=True)
-def ping_api():
+@repeat_every(seconds=6, wait_first=False, raise_exceptions=True)
+async def ping_api():
     """Ping the API."""
-    r = redis.Redis(host='redis', port=6379, db=0, charset="utf-8", decode_responses=True)
-    r2 = redis.Redis(host='redis', port=6379, db=1, charset="utf-8", decode_responses=True)
-    if len(r.keys()) > 0:
-        print('hello edilson')
-        key = r.keys()[0]
-        message = r.get(key)
-        response = requests.get("https://hiring.api.synthesia.io/" + "/crypto/sign?message=" + message,
-                                headers={"Authorization": "82ca2fe9c123e4437f97b5b29af27751"})
-        if response.status_code == 200:
-            r.delete(key)
-            r2.set(message, response.text)
+    try:
+        process_message()
+    except Exception as e:
+        print(e)
