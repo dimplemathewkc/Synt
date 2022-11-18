@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = ["dimple5 <dimple@vernacular.ai>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.68.0"
+http3 = "^0.6.7"
+requests = "^2.28.1"
+celery = "^5.2.7"
+flower = "^1.2.0"
+redis = "^4.3.4"
+fastapi-utils = "^0.2.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+pytest-cov = "^2.10.1"
+autoflake = "^1.4"
+flake8 = "^3.8.4"
+mypy = "^0.790"
+isort = "^5.0"
+pre-commit = "^2.8.2"
+black = "^20.8b1"
+http3 = "^0.6.7"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^5.2"
+requests = "^2.28.1"
+http3 = "^0.6.7"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
