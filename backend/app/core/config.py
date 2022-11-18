@@ -1,6 +1,6 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import List, Union
 from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
-import os
+
 
 
 class Settings(BaseSettings):
@@ -15,11 +15,6 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
-    POSTGRES_SERVER: str
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
-    DATABASE_URI: Optional[PostgresDsn] = None
 
     # hiring api details
     API_KEY: str
@@ -29,21 +24,10 @@ class Settings(BaseSettings):
     CACHE_ACTIVE: bool = True
 
     # redis details
-    # REDIS_HOST: str
-    # REDIS_PORT: str
-    # REDIS_DB: str
+    REDIS_HOST: str
+    REDIS_PORT: str
+    REDIS_DB: str
 
-    @validator("DATABASE_URI", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
-        if isinstance(v, str):
-            return v
-        return PostgresDsn.build(
-            scheme="postgresql",
-            user=values.get("POSTGRES_USER"),
-            password=values.get("POSTGRES_PASSWORD"),
-            host=values.get("POSTGRES_SERVER"),
-            path=f"/{values.get('POSTGRES_DB') or ''}",
-        )
 
     class Config:
         case_sensitive = True
