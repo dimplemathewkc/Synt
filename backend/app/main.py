@@ -7,6 +7,8 @@ from app.core.config import settings
 
 from app.endpoints import api
 
+from app.worker.manager import Manager
+
 
 def get_application():
     _app = FastAPI(title=settings.PROJECT_NAME)
@@ -26,10 +28,14 @@ app = get_application()
 
 
 @app.on_event("startup")
-@repeat_every(seconds=6, wait_first=False, raise_exceptions=True)
+@repeat_every(seconds=1, wait_first=False, raise_exceptions=True)
 async def ping_api():
-    """Ping the API."""
+    """
+
+    :return:
+    """
     try:
-        process_message()
+
+        Manager.Instance().consume_single_message()
     except Exception as e:
         print(e)
