@@ -1,12 +1,10 @@
 # test api helper
-def test_api_helper():
-    """
-    Test api helper.
-    """
-    from app.integration.api_helper import make_request
+from app.utils.utils import make_url
 
-    url = "/crypto/sign"
-    message = "hello"
-    signature = "hello"
-    response = make_request(url, message, signature)
-    assert response.status_code == 200
+
+def test_make_url():
+    """
+    Test make request.
+    """
+    url = make_url('http://localhost:5000', 'message', 'signature')
+    assert url == 'https://hiring.api.synthesia.iohttp://localhost:5000?message=message&signature=signature'
