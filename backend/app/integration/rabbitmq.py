@@ -1,14 +1,14 @@
 import json
-import requests
-from app.core.config import settings
-
 from app.integration.rabbitmq_conf import RabbitMQConnection
-
-from backend.app.integration.redis import RedisClient
 
 
 def publish_message(message, webhook):
-
+    """
+    This method is used to publish a message to the queue.
+    :param message: client message
+    :param webhook: client webhook
+    :return:
+    """
     channel = RabbitMQConnection.Instance().get_channel()
 
     channel.basic_publish(
@@ -19,26 +19,3 @@ def publish_message(message, webhook):
 
     RabbitMQConnection.Instance().close_connection()
     return
-
-
-def process_message():
-    redis_client = RedisClient.Instance().get_client()
-    channel = RabbitMQConnection.Instance().get_channel()
-    # try:
-    method_frame, header_frame, body = channel.basic_get(queue="fastapi_task")
-
-    if method_frame is not None:
-        message, webhook = json.loads(body.decode("utf-8")).values()
-
-        response = requests.get(
-            "https://hiring.api.synthesia.io" + "/crypto/sign?message=" + message,
-            headers={"Authorization": "82ca2fe9c123e4437f97b5b29af27751"},
-        )
-        print(response.status_code)
-        if response.status_code == 200:
-            requests.post(webhook, json={"message": response.text})
-            channel.basic_ack(delivery_tag=method_frame.delivery_tag)
-            if settings.CACHE_ACTIVE:
-                redis_client.set(message, response.text)
-
-    RabbitMQConnection.Instance().close_connection()
