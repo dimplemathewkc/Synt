@@ -10,7 +10,7 @@ To run the API locally follow the steps below:
 2. Create a virtual environment
 3. Install the dependencies
 4. Run the API
-5. Access the API documentation `/docs`
+5. Access the API documentation `http://localhost:8000/docs`
 
 To run through docker follow the steps below:
 
