@@ -2,7 +2,7 @@
 name = "backend"
 version = "0.1.0"
 description = ""
-authors = ["dimple5 <dimple@vernacular.ai>"]
+authors = ["dimple"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
