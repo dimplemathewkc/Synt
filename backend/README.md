@@ -19,7 +19,26 @@ To run through docker follow the steps below:
 
 ### Prerequisites
 
-To run the API locally, you need to have docker installed.
+1. To run the API locally, you need to have docker installed.
+2. Add a .env file
+3. Add the following environment variables to the .env file
+
+```
+PROJECT_NAME=backend
+BACKEND_CORS_ORIGINS=["http://localhost:8000", "https://localhost:8000", "http://localhost", "https://localhost"]
+
+
+API_KEY=
+API_SECRET=
+API_URL=https://hiring.api.synthesia.io
+
+CACHE_ACTIVE=True
+
+REDIS_HOST=redis
+REDIS_PORT=6379
+REDIS_DB=1
+
+```
 
 ### Installing
 
