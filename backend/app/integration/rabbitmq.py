@@ -36,10 +36,9 @@ def process_message():
         )
         print(response.status_code)
         if response.status_code == 200:
-            if settings.CACHE_ACTIVE:
-                print(type(redis_client))
-                redis_client.set(message, response.text)
-                requests.post(webhook, json={"message": response.text})
+            requests.post(webhook, json={"message": response.text})
             channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+            if settings.CACHE_ACTIVE:
+                redis_client.set(message, response.text)
 
     RabbitMQConnection.Instance().close_connection()
