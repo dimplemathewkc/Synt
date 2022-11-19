@@ -20,9 +20,6 @@ To run through docker follow the steps below:
 ### Prerequisites
 
 To run the API locally, you need to have docker installed.
-```
-Give examples
-```
 
 ### Installing
 
@@ -40,9 +37,7 @@ pytest tests
 ### Break down into end to end tests
 
 The tests are located in the tests folder and are divided on modules. 
-```
-Give an example
-```
+
 
 ### And coding style tests
 
