@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 
-from app.integration.rabbitmq import process_message
 from app.core.config import settings
 
 from app.endpoints import api
@@ -29,13 +28,12 @@ app = get_application()
 
 @app.on_event("startup")
 @repeat_every(seconds=1, wait_first=False, raise_exceptions=True)
-async def ping_api():
+async def initiate_manager():
     """
-
+    Initiate manager on startup.
     :return:
     """
     try:
-
         Manager.Instance().consume_single_message()
     except Exception as e:
         print(e)

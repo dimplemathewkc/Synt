@@ -1,10 +1,5 @@
 import json
-import requests
-from app.core.config import settings
-
 from app.integration.rabbitmq_conf import RabbitMQConnection
-
-from backend.app.integration.redis import RedisClient
 
 
 def publish_message(message, webhook):
