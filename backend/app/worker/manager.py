@@ -19,6 +19,7 @@ class Manager:
     1. consume_single_message: This method is used to consume a single message from the queue and process it.
     2. process_single_message: This method is used to process a single message and return the result.
     """
+
     def __init__(self):
         self.clocks = [None] * 10
 
