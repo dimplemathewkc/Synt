@@ -13,7 +13,6 @@ To run the API locally follow the steps below:
 5. Access the API documentation `http://localhost:8000/docs`
 
 ![Screenshot 2022-11-19 at 3 39 33 PM 2](https://user-images.githubusercontent.com/36413448/202856534-865e47d6-b450-4ebf-8248-4b56054c44b2.png)
-![Screenshot 2022-11-19 at 3 39 33 PM](https://user-images.githubusercontent.com/36413448/202856538-8963a23f-f2b3-443b-bbaa-f76d5b2848fa.png)
 
 
 To run through docker follow the steps below:
